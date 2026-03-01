@@ -1,0 +1,73 @@
+{% extends 'library/base.html' %}
+{% block title %}My Books — Library{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h2><i class="bi bi-bookmark-star me-2"></i>My Issued Books</h2>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="content-card">
+        <div class="card-body p-0">
+            {% if issues %}
+            <div class="table-responsive">
+                <table class="table table-modern">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Author</th>
+                            <th>Issue Date</th>
+                            <th>Due Date</th>
+                            <th>Days Left</th>
+                            <th>Fine</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for issue in issues %}
+                        <tr>
+                            <td class="fw-semibold">{{ issue.book.title|truncatewords:5 }}</td>
+                            <td>{{ issue.book.author }}</td>
+                            <td>{{ issue.issue_date|date:"d M Y" }}</td>
+                            <td>{{ issue.due_date|date:"d M Y" }}</td>
+                            <td>
+                                {% if issue.days_remaining >= 0 %}
+                                <span class="text-success fw-bold">{{ issue.days_remaining }} days</span>
+                                {% else %}
+                                <span class="text-danger fw-bold">{{ issue.days_remaining }} days</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if issue.calculated_fine > 0 %}
+                                <span class="text-danger fw-bold">₹{{ issue.calculated_fine }}</span>
+                                {% else %}
+                                ₹0
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if issue.status == 'OVERDUE' %}
+                                <span class="badge-overdue">Overdue</span>
+                                {% else %}
+                                <span class="badge-issued">Issued</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-bookmark" style="font-size:3rem;"></i>
+                <p class="mt-2 mb-1">You don't have any books issued right now.</p>
+                <a href="{% url 'search_books' %}" class="btn btn-primary-custom btn-sm mt-2">
+                    <i class="bi bi-search me-1"></i> Browse Books
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

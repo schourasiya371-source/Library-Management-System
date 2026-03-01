@@ -1,0 +1,66 @@
+{% extends 'library/base.html' %}
+{% block title %}Issue History — Library{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h2><i class="bi bi-clock-history me-2"></i>Issue History</h2>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="content-card">
+        <div class="card-body p-0">
+            {% if issues %}
+            <div class="table-responsive">
+                <table class="table table-modern">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Author</th>
+                            <th>Issue Date</th>
+                            <th>Due Date</th>
+                            <th>Return Date</th>
+                            <th>Fine</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for issue in issues %}
+                        <tr>
+                            <td class="fw-semibold">{{ issue.book.title|truncatewords:5 }}</td>
+                            <td>{{ issue.book.author }}</td>
+                            <td>{{ issue.issue_date|date:"d M Y" }}</td>
+                            <td>{{ issue.due_date|date:"d M Y" }}</td>
+                            <td>{{ issue.return_date|date:"d M Y"|default:"—" }}</td>
+                            <td>
+                                {% if issue.fine > 0 %}
+                                <span class="text-danger fw-bold">₹{{ issue.fine }}</span>
+                                {% else %}
+                                ₹0
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if issue.status == 'ISSUED' %}
+                                <span class="badge-issued">Issued</span>
+                                {% elif issue.status == 'RETURNED' %}
+                                <span class="badge-returned">Returned</span>
+                                {% else %}
+                                <span class="badge-overdue">Overdue</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-clock" style="font-size:3rem;"></i>
+                <p class="mt-2 mb-0">No issue history yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

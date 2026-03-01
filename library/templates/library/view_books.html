@@ -1,0 +1,113 @@
+{% extends 'library/base.html' %}
+{% block title %}Books — Library{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <h2><i class="bi bi-journal-bookmark me-2"></i>All Books</h2>
+        <a href="{% url 'add_book' %}" class="btn btn-primary-custom btn-sm">
+            <i class="bi bi-plus-circle me-1"></i> Add Book
+        </a>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <!-- Search & Filter -->
+    <div class="search-bar">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-6">
+                <input type="text" name="q" class="form-control" placeholder="Search by title, author, or ISBN..."
+                    value="{{ query }}">
+            </div>
+            <div class="col-md-4">
+                <select name="category" class="form-select">
+                    <option value="">All Categories</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if selected_category==cat.id|stringformat:"d" %}selected{% endif %}>
+                        {{ cat.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary-custom w-100">
+                    <i class="bi bi-search me-1"></i> Search
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Books Table -->
+    <div class="content-card">
+        <div class="card-body p-0">
+            {% if books %}
+            <div class="table-responsive">
+                <table class="table table-modern">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Author</th>
+                            <th>ISBN</th>
+                            <th>Category</th>
+                            <th>Total</th>
+                            <th>Available</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in books %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    {% if book.cover_image %}
+                                    <img src="{{ book.cover_image.url }}" alt=""
+                                        style="width:36px; height:48px; object-fit:cover; border-radius:4px;">
+                                    {% else %}
+                                    <div
+                                        style="width:36px; height:48px; background:var(--gray-100); border-radius:4px; display:flex; align-items:center; justify-content:center;">
+                                        <i class="bi bi-book text-muted"></i>
+                                    </div>
+                                    {% endif %}
+                                    <span class="fw-semibold">{{ book.title|truncatewords:5 }}</span>
+                                </div>
+                            </td>
+                            <td>{{ book.author }}</td>
+                            <td><code>{{ book.isbn }}</code></td>
+                            <td>{{ book.category|default:"—" }}</td>
+                            <td>{{ book.total_quantity }}</td>
+                            <td>{{ book.available_quantity }}</td>
+                            <td>
+                                {% if book.is_available %}
+                                <span class="badge-available">Available</span>
+                                {% else %}
+                                <span class="badge-unavailable">Unavailable</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a href="{% url 'edit_book' book.pk %}" class="btn btn-outline-custom btn-sm"
+                                        data-bs-toggle="tooltip" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'delete_book' book.pk %}" class="btn btn-danger-custom btn-sm"
+                                        data-bs-toggle="tooltip" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-journal-x" style="font-size:3rem;"></i>
+                <p class="mt-2 mb-0">No books found. <a href="{% url 'add_book' %}">Add one now!</a></p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

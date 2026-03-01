@@ -1,0 +1,72 @@
+{% extends 'library/base.html' %}
+{% block title %}Browse Books — Library{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h2><i class="bi bi-search me-2"></i>Browse Books</h2>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <!-- Search -->
+    <div class="search-bar">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-6">
+                <input type="text" name="q" class="form-control" placeholder="Search by title, author, or ISBN..."
+                    value="{{ query }}">
+            </div>
+            <div class="col-md-4">
+                <select name="category" class="form-select">
+                    <option value="">All Categories</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if selected_category==cat.id|stringformat:"d" %}selected{% endif %}>
+                        {{ cat.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary-custom w-100"><i class="bi bi-search me-1"></i>
+                    Search</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Book Grid -->
+    {% if books %}
+    <div class="row g-4">
+        {% for book in books %}
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <div class="book-card animate-in">
+                <div class="book-cover">
+                    {% if book.cover_image %}
+                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+                    {% else %}
+                    <i class="bi bi-book no-image"></i>
+                    {% endif %}
+                </div>
+                <div class="book-info">
+                    <h6 class="book-title">{{ book.title }}</h6>
+                    <p class="book-author"><i class="bi bi-person me-1"></i>{{ book.author }}</p>
+                    <div class="book-meta">
+                        {% if book.is_available %}
+                        <span class="badge-available"><i class="bi bi-check-circle me-1"></i>Available</span>
+                        {% else %}
+                        <span class="badge-unavailable"><i class="bi bi-x-circle me-1"></i>Unavailable</span>
+                        {% endif %}
+                        <a href="{% url 'book_detail' book.pk %}" class="btn btn-outline-custom btn-sm">Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-search" style="font-size:3rem;"></i>
+        <p class="mt-2 mb-0">No books found matching your search.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

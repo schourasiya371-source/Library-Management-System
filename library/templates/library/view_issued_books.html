@@ -1,0 +1,97 @@
+{% extends 'library/base.html' %}
+{% block title %}Issued Books — Library{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <h2><i class="bi bi-list-check me-2"></i>Issued Books</h2>
+        <a href="{% url 'issue_book_admin' %}" class="btn btn-primary-custom btn-sm">
+            <i class="bi bi-plus-circle me-1"></i> Issue New
+        </a>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <!-- Filter -->
+    <div class="search-bar">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-9">
+                <select name="status" class="form-select">
+                    <option value="">All Statuses</option>
+                    <option value="ISSUED" {% if status_filter=='ISSUED' %}selected{% endif %}>Issued</option>
+                    <option value="OVERDUE" {% if status_filter=='OVERDUE' %}selected{% endif %}>Overdue</option>
+                    <option value="RETURNED" {% if status_filter=='RETURNED' %}selected{% endif %}>Returned</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary-custom w-100"><i class="bi bi-funnel me-1"></i>
+                    Filter</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="content-card">
+        <div class="card-body p-0">
+            {% if issues %}
+            <div class="table-responsive">
+                <table class="table table-modern">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Student</th>
+                            <th>Issue Date</th>
+                            <th>Due Date</th>
+                            <th>Return Date</th>
+                            <th>Fine</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for issue in issues %}
+                        <tr>
+                            <td class="fw-semibold">{{ issue.book.title|truncatewords:4 }}</td>
+                            <td>{{ issue.student.get_full_name }}</td>
+                            <td>{{ issue.issue_date|date:"d M Y" }}</td>
+                            <td>{{ issue.due_date|date:"d M Y" }}</td>
+                            <td>{{ issue.return_date|date:"d M Y"|default:"—" }}</td>
+                            <td>
+                                {% if issue.fine > 0 %}
+                                <span class="text-danger fw-bold">₹{{ issue.fine }}</span>
+                                {% else %}
+                                ₹0
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if issue.status == 'ISSUED' %}
+                                <span class="badge-issued">Issued</span>
+                                {% elif issue.status == 'RETURNED' %}
+                                <span class="badge-returned">Returned</span>
+                                {% else %}
+                                <span class="badge-overdue">Overdue</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if issue.status != 'RETURNED' %}
+                                <a href="{% url 'return_book_admin' issue.pk %}" class="btn btn-success-custom btn-sm">
+                                    <i class="bi bi-check-lg me-1"></i>Return
+                                </a>
+                                {% else %}
+                                <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-inbox" style="font-size:3rem;"></i>
+                <p class="mt-2 mb-0">No issued books found.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

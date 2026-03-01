@@ -1,0 +1,39 @@
+{% extends 'library/base.html' %}
+{% block title %}Issue Book — Library{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h2><i class="bi bi-box-arrow-right me-2"></i>Issue a Book</h2>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="content-card">
+                <div class="card-header-custom">
+                    <h5>Issue Book to Student</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Select Book *</label>
+                            {{ form.book }}
+                            <small class="text-muted">Only books with available copies are shown.</small>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Select Student *</label>
+                            {{ form.student }}
+                        </div>
+                        <button type="submit" class="btn btn-success-custom">
+                            <i class="bi bi-check-circle me-2"></i>Issue Book
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
